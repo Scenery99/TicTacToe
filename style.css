@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+  
+body {
+    font-family: "Nunito Sans", sans-serif;
+    background-image: url("./18954486_6068474.jpg");
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    position: relative; 
+    min-height: 100vh;
+}
+  
+.header {
+    padding: 20px;
+    text-align: center;
+}
+  
+.header h1 {
+    color: rgb(245, 36, 234); 
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(160, 2, 134, 0.9);
+}
+
+.game-container {
+    width: 90vw;           
+    max-width: 600px;      
+    margin: 30px auto;     
+    background: rgba(255, 125, 233, 0.7);
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    position: relative;   
+    z-index: 1;
+    box-shadow: 0 0 10px 0 rgba(245, 16, 207, 0.9);
+}
+
+.game-message {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: rgb(66, 2, 63);
+    text-shadow: 1px 1px 2px rgba(231, 31, 198, 0.9);
+}
+ 
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 5px;
+    margin: 0 auto 20px auto;
+    width: 100%;
+    max-width: 400px;
+}
+
+.cell {
+    background-color: #f1e0eb;
+    border: 2px solid #ee5db6;
+    aspect-ratio: 1 / 1;
+    min-width: 30px;
+    height: auto;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: bold;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 4px 0 rgba(245, 16, 207, 0.9);
+    transition: background-color 0.3s;
+}
+ 
+.cell:hover {
+    background-color: #f5cae6;
+}
+
+.restart-btn {
+    background-color: rgb(104, 1, 99);
+    color: rgb(247, 207, 245);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+    box-shadow: 0 0 10px 0 rgba(245, 16, 207, 0.9);
+}
+  
+.restart-btn:hover {
+    background-color: rgb(63, 2, 59);
+}
+
+@keyframes popIn {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+}
+
+.pop {
+    animation: popIn 0.3s ease forwards;
+}
+  
+@keyframes winnerPulse {
+    0% {
+      background-color: #f184e3;
+    }
+    50% {
+      background-color: #fa2bbc;
+    }
+    100% {
+      background-color: #f184e3;
+    }
+}
+  
+.winning-cell {
+    animation: winnerPulse 2s ease-in-out infinite;
+}
+ 
+.confetti-canvas {
+    pointer-events: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;        
+}
+ 
+/* media-запросы */
+@media (max-width: 400px) {
+    .game-board {
+      max-width: 300px;
+    }
+    .game-message {
+      font-size: 1rem;
+    }
+}
+  
