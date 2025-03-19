@@ -44,10 +44,13 @@ body {
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .player-input {
-  padding: 8px;
+  flex: 1;
+  min-width: 120px;
+  padding: 10px;
   border: 2px solid #ee5db6;
   border-radius: 8px;
   background-color: #f1e0eb;
@@ -55,6 +58,7 @@ body {
   font-size: 1rem;
   outline: none;
   transition: background-color 0.3s;
+  text-align: center;
 }
 
 .player-input:focus {
@@ -158,11 +162,20 @@ body {
   z-index: 9999;
 }
 
-/* media-запросы */
 @media (max-width: 400px) {
   .game-board {
     max-width: 300px;
   }
+  .player-names {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .player-input {
+    width: 100%;
+    max-width: 250px;
+    font-size: 0.9rem;
+  } 
   .game-message {
     font-size: 1rem;
   }
