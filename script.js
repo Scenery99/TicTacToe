@@ -1,31 +1,46 @@
+// Элементы интерфейса
 const boardElement = document.getElementById("game-board");
 const cells = document.querySelectorAll(".cell");
 const messageElement = document.getElementById("game-message");
 const restartBtn = document.getElementById("restart-btn");
 const playerXInput = document.getElementById("player-x");
 const playerOInput = document.getElementById("player-o");
-
 const confettiCanvas = document.getElementById("confetti-canvas");
 
-// массив для текущего состояния доски 
-let board = ["", "", "", "", "", "", "", "", ""];
+// массив для текущего состояния игры
+const gameState = {
+  board: ["", "", "", "", "", "", "", "", ""],
+  currentPlayer: "X",
+  isGameActive: true
+};
 
+// имена игроков 
 let playerXName = "X";
 let playerOName = "O";
-let currentPlayer = "X";
-let isGameActive = true;
 
-// обновляем имя игрока при вводе
+// Обновление сообщения о ходе игрока
+function updateMessage(msg) {
+  messageElement.textContent = msg;
+}
+
+// ф-я для смены игрока
+function switchPlayer() {
+  gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
+  const currentPlayerName = gameState.currentPlayer === "X" ? playerXName : playerOName;
+  updateMessage(`Player ${currentPlayerName}'s turn`);
+}
+
+// обрабатываем  ввод имён игроков
 playerXInput.addEventListener("input", () => {
   playerXName = playerXInput.value.trim() || "X";
-  if (currentPlayer === "X") {
-    updateMessage(`Player's turn ${playerXName}`);
+  if (gameState.currentPlayer === "X") {
+    updateMessage(`Player ${playerXName}'s turn`);
   }
 });
 playerOInput.addEventListener("input", () => {
   playerOName = playerOInput.value.trim() || "O";
-  if (currentPlayer === "O") {
-    updateMessage(`Player's turn ${playerOName}`);
+  if (gameState.currentPlayer === "O") {
+    updateMessage(`Player ${playerOName}'s turn`);
   }
 });
 
@@ -85,7 +100,6 @@ function animateConfetti() {
   requestAnimationFrame(animateConfetti);
 }
 
-// обновляем размер холста для конфетти в зависимости от размера экрана  
 function resizeCanvas() {
   confettiCanvas.width = window.innerWidth;
   confettiCanvas.height = window.innerHeight;
@@ -93,33 +107,25 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-// ф-я для изменения сообщения о ходе игрока
-function updateMessage(msg) {
-  messageElement.textContent = msg;
-}
-
-// ф-я для проверки победы или ничьей
+// ф-я для проверки результата игры
 function checkResult() {
   for (let i = 0; i < winningConditions.length; i++) {
     const [a, b, c] = winningConditions[i];
-    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
-      isGameActive = false;
-      const winnerName = currentPlayer === "X" ? playerXName : playerOName;
-      updateMessage(`Player victory ${winnerName}!`);
-
+    if (gameState.board[a] && gameState.board[a] === gameState.board[b] && gameState.board[b] === gameState.board[c]) {
+      gameState.isGameActive = false;
+      const winnerName = gameState.currentPlayer === "X" ? playerXName : playerOName;
+      updateMessage(`Player ${winnerName} wins!`);
       cells[a].classList.add("winning-cell");
       cells[b].classList.add("winning-cell");
       cells[c].classList.add("winning-cell");
-
       initConfetti();
       animateConfetti();
       return;
     }
   }
-  // если победитель не найден – ничья
-  if (!board.includes("")) {
-    isGameActive = false;
-    updateMessage("Draw!");
+  if (!gameState.board.includes("")) {
+    gameState.isGameActive = false;
+    updateMessage("It's a tie!");
     return;
   }
 }
@@ -129,12 +135,12 @@ function handleCellClick(e) {
   const clickedCell = e.target;
   const cellIndex = clickedCell.getAttribute("data-index");
 
-  if (!isGameActive || board[cellIndex] !== "") {
+  if (!gameState.isGameActive || gameState.board[cellIndex] !== "") {
     return;
   }
 
-  board[cellIndex] = currentPlayer;
-  clickedCell.textContent = currentPlayer;
+  gameState.board[cellIndex] = gameState.currentPlayer;
+  clickedCell.textContent = gameState.currentPlayer;
   clickedCell.classList.add("pop");
   setTimeout(() => {
     clickedCell.classList.remove("pop");
@@ -142,10 +148,8 @@ function handleCellClick(e) {
 
   checkResult();
 
-  if (isGameActive) {
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-    const currentPlayerName = currentPlayer === "X" ? playerXName : playerOName;
-    updateMessage(`Player's turn ${currentPlayerName}`);
+  if (gameState.isGameActive) {
+    switchPlayer();
   }
 }
 
@@ -155,10 +159,10 @@ cells.forEach(cell => {
 
 // сброс игры при нажатии на кнопку Restart
 restartBtn.addEventListener("click", () => {
-  board = ["", "", "", "", "", "", "", "", ""];
-  currentPlayer = "X";
-  isGameActive = true;
-  updateMessage(`Player's turn ${playerXName}`);
+  gameState.board = ["", "", "", "", "", "", "", "", ""];
+  gameState.currentPlayer = "X";
+  gameState.isGameActive = true;
+  updateMessage(`Player ${playerXName}'s turn`);
   cells.forEach(cell => {
     cell.textContent = "";
     cell.classList.remove("winning-cell");
