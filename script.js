@@ -2,20 +2,38 @@ const boardElement = document.getElementById("game-board");
 const cells = document.querySelectorAll(".cell");
 const messageElement = document.getElementById("game-message");
 const restartBtn = document.getElementById("restart-btn");
+const playerXInput = document.getElementById("player-x");
+const playerOInput = document.getElementById("player-o");
 
 const confettiCanvas = document.getElementById("confetti-canvas");
 
 // массив для текущего состояния доски 
 let board = ["", "", "", "", "", "", "", "", ""];
 
+let playerXName = "X";
+let playerOName = "O";
 let currentPlayer = "X";
 let isGameActive = true;
 
+// обновляем имя игрока при вводе
+playerXInput.addEventListener("input", () => {
+  playerXName = playerXInput.value.trim() || "X";
+  if (currentPlayer === "X") {
+    updateMessage(`Player's turn ${playerXName}`);
+  }
+});
+playerOInput.addEventListener("input", () => {
+  playerOName = playerOInput.value.trim() || "O";
+  if (currentPlayer === "O") {
+    updateMessage(`Player's turn ${playerOName}`);
+  }
+});
+
 // победные комбинации
 const winningConditions = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8], 
-  [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-  [0, 4, 8], [2, 4, 6]            
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6]
 ];
 
 // ф-я для появления конфетти
@@ -26,8 +44,8 @@ function createConfettiPiece() {
   return {
     x: Math.random() * confettiCanvas.width,
     y: Math.random() * confettiCanvas.height - confettiCanvas.height,
-    r: (Math.random() * 6) + 4, 
-    d: (Math.random() * 50) + 10, 
+    r: (Math.random() * 6) + 4,
+    d: (Math.random() * 50) + 10,
     color: `hsl(${Math.random() * 360}, 100%, 50%)`,
     tilt: Math.floor(Math.random() * 10) - 10
   };
@@ -42,7 +60,6 @@ function initConfetti() {
 
 function drawConfetti() {
   confettiContext.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
   confettiPieces.forEach((piece, index) => {
     confettiContext.beginPath();
     confettiContext.fillStyle = piece.color;
@@ -56,7 +73,6 @@ function updateConfetti() {
   confettiPieces.forEach((piece, index) => {
     piece.y += Math.cos(piece.d) + 1 + piece.r / 2;
     piece.x += Math.sin(piece.d);
-
     if (piece.y > confettiCanvas.height) {
       confettiPieces[index] = createConfettiPiece();
       confettiPieces[index].y = 0;
@@ -75,7 +91,7 @@ function resizeCanvas() {
   confettiCanvas.height = window.innerHeight;
 }
 window.addEventListener("resize", resizeCanvas);
-resizeCanvas(); 
+resizeCanvas();
 
 // ф-я для изменения сообщения о ходе игрока
 function updateMessage(msg) {
@@ -88,7 +104,8 @@ function checkResult() {
     const [a, b, c] = winningConditions[i];
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
       isGameActive = false;
-      updateMessage(`Player ${currentPlayer} wins!`);
+      const winnerName = currentPlayer === "X" ? playerXName : playerOName;
+      updateMessage(`Player victory ${winnerName}!`);
 
       cells[a].classList.add("winning-cell");
       cells[b].classList.add("winning-cell");
@@ -102,12 +119,12 @@ function checkResult() {
   // если победитель не найден – ничья
   if (!board.includes("")) {
     isGameActive = false;
-    updateMessage("It's a tie!");
+    updateMessage("Draw!");
     return;
   }
 }
 
-// ф-я для обработки хода, если ячейка пустая ставится x или 0
+// ф-я для обработки хода
 function handleCellClick(e) {
   const clickedCell = e.target;
   const cellIndex = clickedCell.getAttribute("data-index");
@@ -118,35 +135,34 @@ function handleCellClick(e) {
 
   board[cellIndex] = currentPlayer;
   clickedCell.textContent = currentPlayer;
-
   clickedCell.classList.add("pop");
   setTimeout(() => {
     clickedCell.classList.remove("pop");
   }, 300);
 
   checkResult();
-  // eсли игра продолжается меняем игрока
+
   if (isGameActive) {
     currentPlayer = currentPlayer === "X" ? "O" : "X";
-    updateMessage(`Player ${currentPlayer}'s turn`);
+    const currentPlayerName = currentPlayer === "X" ? playerXName : playerOName;
+    updateMessage(`Player's turn ${currentPlayerName}`);
   }
 }
 
 cells.forEach(cell => {
   cell.addEventListener("click", handleCellClick);
 });
-// с помощью «Restart» сбрасываем игру
+
+// сброс игры при нажатии на кнопку Restart
 restartBtn.addEventListener("click", () => {
   board = ["", "", "", "", "", "", "", "", ""];
   currentPlayer = "X";
   isGameActive = true;
-  updateMessage("Player X's turn");
-  // очищаем ячейки
+  updateMessage(`Player's turn ${playerXName}`);
   cells.forEach(cell => {
     cell.textContent = "";
     cell.classList.remove("winning-cell");
   });
-  // останавливаем конфетти 
   confettiContext.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
   confettiPieces = [];
 });
